@@ -3,9 +3,15 @@ from pydantic import BaseModel
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
+tasks = []
+
 class LoginBody(BaseModel):
     email: str
     password: str
+
+class Task(BaseModel):
+    title: str
+    description: str
 
 app = FastAPI()
 
@@ -25,3 +31,12 @@ def login(loginBody: LoginBody):
     return {
         "msg": "Login successfully"
     }
+
+@app.get("/tasks", response_model=list[Task])
+def get_tasks():
+    return tasks
+
+@app.post("/tasks", response_model=Task)
+def create_task(task: Task):
+    tasks.append(task)
+    return task
